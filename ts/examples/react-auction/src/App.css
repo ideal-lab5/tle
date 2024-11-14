@@ -1,0 +1,61 @@
+.App {
+  text-align: center;
+  /* margin: 0 auto;
+  display: grid; */
+}
+
+.form {
+  display: grid;
+  /* width: 200px; */
+  margin: 0 auto;
+}
+
+.encrypt-body {
+  display: grid;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 10px;
+  border: solid 1px salmon;
+}
+
+.button {
+  margin: 10px;
+  /* width: 100px; */
+  /* margin: 0 auto; */
+  /* padding": */
+}
+
+.header {
+  font-size: 25px;
+  padding: 22px;
+}
+
+.table {
+  margin: 0 auto;
+  border: 1px solid black;
+}
+
+td {
+  width: 200px;
+  border: 1px solid black;
+}
+
+.body {
+  /* display: flex;
+  margin: 0 auto; */
+}
+
+.data-display {
+  float: left;
+  padding: 10px;
+}
+
+.encrypted-message-data-display {
+  border: solid 1px black;
+}
+
+
+.form {
+  display: grid;
+  max-width: 200px;
+}

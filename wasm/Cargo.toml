@@ -1,0 +1,44 @@
+[package]
+name = "tle-wasm-wrapper"
+version = "0.0.1-dev"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "An API for calling etf crypto primitives for encryption and proof verification"
+repository = "https://github.com/ideal-lab5/etf"
+authors = [
+    "Tony Riemer <driemworks@idealabs.network>",
+    "Coleman Irby <coleman@idealabs.network>"
+]
+homepage = "https://idealabs.network"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lib]
+crate-type = [
+    "cdylib",
+    "rlib", 
+]
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
+rand_core = "0.6.4"
+tle = { path = "../tle", default-features = false }
+serde = { version = "1.0.208", features = ["derive", "alloc"] }
+serde-big-array = { version = "0.5.1", default-features = false }
+serde-wasm-bindgen = "0.6.5"
+wasm-bindgen = "0.2.92"
+ark-serialize = { version = "0.4.0", default-features = false }
+ark-std = { version = "0.4.0", default-features = false }
+ark-bls12-381 = { version = "0.4.0", features = ["curve"], default-features = false }
+ark-ec = { version = "0.4.0", default-features = false }
+getrandom = { version = "0.2", features = ["js"] }
+rand_chacha = { version = "0.3.1", default-features = false }
+w3f-bls = { version = "0.1.3", default-features = false }
+sp-consensus-beefy-etf = { git = "https://github.com/ideal-lab5/pallets.git", features = ["bls-experimental"]}
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.0"
