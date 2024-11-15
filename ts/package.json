@@ -1,0 +1,59 @@
+{
+  "name": "@ideallabs/tle.js",
+  "version": "0.0.1-dev",
+  "description": "a typescript sdk for timelock encryption/decryption with the Ideal Network",
+  "license": "GPL-3.0",
+  "repository": "https://github.com/ideal-lab5/tle",
+  "main": "dist/index.js",
+  "type": "module",
+  "dependencies": {
+    "tle-wasm-wrapper": "file:../wasm/pkg/",
+    "@polkadot/api": "^10.9.1",
+    "@polkadot/api-augment": "^10.9.1",
+    "@polkadot/extension-dapp": "^0.46.3",
+    "@polkadot/rpc-provider": "^10.9.1",
+    "@polkadot/types": "^10.9.1",
+    "@polkadot/util": "^12.0.1",
+    "@polkadot/util-crypto": "^12.6.2",
+    "@substrate/connect": "^0.8.11",
+    "@substrate/txwrapper-substrate": "^7.0.1",
+    "events": "^3.3.0",
+    "js-crypto-hkdf": "^1.0.7"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "transform": {
+      "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "//node_modules/(?!variables/.*)"
+    ],
+    "testPathIgnorePatterns": [
+      "dist"
+    ],
+    "moduleNameMapper": {
+      "tle-wasm-wrapper": "<rootDir>/test/__mocks__/tle-wasm-wrapper.ts",
+      "@polkadot/rpc-provider": "<rootDir>/test/__mocks__/@polkadot/rpc-provider.ts",
+      "@polkadot/api": "<rootDir>/test/__mocks__/@polkadot/api.ts",
+      "@polkadot/types": "<rootDir>/test/__mocks__/@polkadot/types.ts"
+    }
+  },
+  "scripts": {
+    "build:wasm": "cd ../wasm && ./wasm_build.sh",
+    "build": "npm run build:wasm && npm i && tsc",
+    "test": "jest",
+    "lint": "prettier --write ."
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.22.11",
+    "@jest/globals": "^29.6.4",
+    "@types/jest": "^29.5.4",
+    "jest": "^29.6.2",
+    "prettier": "^3.0.3",
+    "rxjs": "^7.8.1",
+    "ts-jest": "^29.1.1",
+    "ts-jest-resolver": "^2.0.1",
+    "typescript": "^5.2.2"
+  }
+}
