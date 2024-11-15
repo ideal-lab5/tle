@@ -25,7 +25,7 @@ use serde::{Deserialize, Serialize};
 
 use ark_std::{rand::CryptoRng, vec::Vec};
 
-/// The output of AES Encryption plus the ephemeral secret key
+/// The output of AES_GCM Encryption
 #[derive(
 	Clone,
 	Serialize,
@@ -41,48 +41,61 @@ pub struct AESOutput {
 	pub nonce: Vec<u8>,
 }
 
+/// The expected length of a nonce used with AES_GCM
+const AES_GCM_NONCE_LEN: usize = 12;
+
+/// Errors that mayb be encountered with using a stream cipher
 #[derive(Debug, PartialEq)]
 pub enum Error {
+	/// The ciphertext exceeds the maximum buffer size
 	CiphertextTooLarge,
-	EncryptionError,
-	DecryptionError,
+	/// The provided decryption key is invalid
 	InvalidKey,
+	/// The provided nonce is invalid
 	BadNonce,
 }
 
 /// Something that provides encryption and decryption using a stream cipher
 pub trait StreamCipherProvider<const N: usize> {
+	/// Some identifier to indiciate which ciphersuite was used
 	const CIPHER_SUITE: &'static [u8];
 	type Ciphertext: CanonicalDeserialize + CanonicalSerialize;
-	/// encrypt the message under the given N-byte key
+	/// Encrypt the message under the given N-byte key
 	fn encrypt<R: Rng + CryptoRng + Sized>(
 		message: &[u8],
 		key: [u8; N],
 		rng: R,
 	) -> Result<Self::Ciphertext, Error>;
 
-	/// decrypt the ciphertext
+	/// Decrypt the ciphertext
 	fn decrypt(
 		ciphertext: Self::Ciphertext,
 		key: [u8; N],
 	) -> Result<Vec<u8>, Error>;
 }
 
+/// This provides the AES_GCM stream cipher, allowing message to be encrypted and decrypted under AES_GCM
 pub struct AESGCMStreamCipherProvider;
 impl StreamCipherProvider<32> for AESGCMStreamCipherProvider {
 	const CIPHER_SUITE: &'static [u8] = b"AES_GCM_";
+
 	type Ciphertext = AESOutput;
+
 	/// AES-GCM encryption of the message using an ephemeral keypair
 	/// basically a wrapper around the AEADs library to handle serialization
 	///
 	/// * `message`: The message to encrypt
+	/// * `key`: the key used for encryption
+	/// * `rng`: A CSPRNG
 	fn encrypt<R: Rng + CryptoRng + Sized>(
 		message: &[u8],
 		key: [u8; 32],
 		mut rng: R,
 	) -> Result<Self::Ciphertext, Error> {
+
 		let cipher =
 			Aes256Gcm::new(generic_array::GenericArray::from_slice(&key));
+
 		let nonce = Aes256Gcm::generate_nonce(&mut rng); // 96-bits; unique per message
 
 		let mut buffer: Vec<u8> = Vec::new(); // Note: buffer needs 16-bytes overhead for auth tag
@@ -100,13 +113,10 @@ impl StreamCipherProvider<32> for AESGCMStreamCipherProvider {
 	///
 	/// * `ciphertext`: the ciphertext to decrypt
 	/// * `nonce`: the nonce used on encryption
-	/// * `key`: the key used for encryption
 	fn decrypt(ct: Self::Ciphertext, key: [u8; 32]) -> Result<Vec<u8>, Error> {
 		let cipher =
 			Aes256Gcm::new_from_slice(&key).map_err(|_| Error::InvalidKey)?;
-		// lets check the nonce... not great way to do it but ok for now
-		// TODO:get a valid nonce size as a constant
-		if ct.nonce.len() != 12 {
+		if ct.nonce.len() != AES_GCM_NONCE_LEN {
 			return Err(Error::BadNonce);
 		}
 		let nonce = Nonce::from_slice(&ct.nonce);

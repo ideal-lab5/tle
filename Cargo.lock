@@ -3637,6 +3637,7 @@ dependencies = [
  "serde",
  "serde-big-array",
  "serde-wasm-bindgen",
+ "sha2 0.10.8",
  "sp-consensus-beefy-etf",
  "tle",
  "w3f-bls",

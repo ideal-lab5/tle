@@ -9,9 +9,6 @@ authors = ["Tony Riemer <driemworks@idealabs.network>"]
 rust-version = "1.63"
 homepage = "https://idealabs.network"
 
-# [lib]
-# crate-type = ["cdylib"]
-
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
