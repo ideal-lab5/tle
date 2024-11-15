@@ -11,8 +11,8 @@ The output can be found in `/target/criterion/your_bench_target`. It constructs 
 ## Adding new Benches
 
 To add a new bench:
-1. create a new file under etf-crypto-primitives/benches for example `my_new_bench.rs`
-2. register your benchmark in the etf-crypto-primitives Cargo.toml by adding:
+1. create a new file under `tle/benches` for example `my_new_bench.rs`
+2. register your benchmark in the tle Cargo.toml by adding:
 ``` toml
 [[bench]]
 name = "my_new_bench"

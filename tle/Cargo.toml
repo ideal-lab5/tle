@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "timelock encryption imlementation using BF-IBE"
 license = "Apache-2.0"
-repository = "https://github.com/ideal-lab5/etf"
+repository = "https://github.com/ideal-lab5/tle"
 authors = ["Tony Riemer <driemworks@idealabs.network>"]
 rust-version = "1.63"
 homepage = "https://idealabs.network"
@@ -46,11 +46,7 @@ simulacrum = "0.3.0"
 criterion = { version = "0.4", features = ["html_reports"] }
 
 [[bench]]
-name = "tlock_single_commitee_dynamic_data"
-harness = false
-
-[[bench]]
-name = "tlock_dynamic_committee_static_data"
+name = "tlock"
 harness = false
 
 [features]

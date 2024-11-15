@@ -4,25 +4,28 @@ use criterion::{
 	black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 	Throughput,
 };
-use etf_crypto_primitives::{encryption::tlock::*, ibe::fullident::*};
 use rand_core::OsRng;
-use w3f_bls::{EngineBLS, TinyBLS377};
+use tle::{ibe::fullident::*, stream_ciphers::AESGCMStreamCipherProvider, tlock::*};
+use w3f_bls::{EngineBLS, SecretKey, TinyBLS377};
 
 /// encrypts a message for the identity and then decrypts it after preparing a
 /// bls sig this expects on a single signature but tests many different input
 /// data sizes
 fn tlock_tinybls377<E: EngineBLS>(
-	msk: SecretKey<E>,
+	msk: [u8;32],
 	p_pub: E::PublicKeyGroup,
 	message: Vec<u8>,
 	id: Identity,
-	sigs: Vec<IBESecret<E>>,
+	sig: IBESecret<E>,
 ) {
-	let ct = msk.encrypt(p_pub, &message, id.clone(), &mut OsRng).unwrap();
-	let _m = ct.decrypt(sigs).unwrap();
+	let ct = tle::<TinyBLS377, AESGCMStreamCipherProvider, OsRng>(
+		p_pub, msk, &message, id, OsRng,
+	)
+	.uwnrap();
+	let _m = tld::<TinyBLS377, AESGCMStreamCipherProvider>(ct, sig).unwrap();
 }
 
-fn tlock_single_commitee_dynamic_data(c: &mut Criterion) {
+fn tlock(c: &mut Criterion) {
 	static KB: usize = 1024;
 
 	let s = <TinyBLS377 as EngineBLS>::Scalar::rand(&mut OsRng);
@@ -30,8 +33,8 @@ fn tlock_single_commitee_dynamic_data(c: &mut Criterion) {
 	let id = Identity::new(b"", vec![b"test".to_vec()]);
 	let msk = <TinyBLS377 as EngineBLS>::Scalar::rand(&mut OsRng);
 
-	let mut group = c.benchmark_group("tlock_single_commitee_dynamic_data");
-	for size in [KB, 2 * KB, 4 * KB, 8 * KB, 16 * KB, 128 * KB].iter() {
+	let mut group = c.benchmark_group("tlock");
+	for size in [KB, 2 * KB, 4 * KB, 8 * KB, 16 * KB, 128 * KB, 256 * KB].iter() {
 		let mut dummy_data = Vec::with_capacity(*size);
 		(0..*size).for_each(|i| dummy_data.push(i as u8));
 
@@ -41,12 +44,12 @@ fn tlock_single_commitee_dynamic_data(c: &mut Criterion) {
 			size,
 			|b, &size| {
 				b.iter(|| {
-					tlock_tinybls377(
-						black_box(SecretKey::<TinyBLS377>::new(msk)),
+					tlock_tinybls377::<TinyBLS377>(
+						black_box([2;32]),
 						black_box(p_pub),
 						black_box(dummy_data.clone()),
 						black_box(id.clone()),
-						black_box(vec![id.extract(s)]),
+						black_box(id.extract(s)),
 					);
 				});
 			},
@@ -55,5 +58,5 @@ fn tlock_single_commitee_dynamic_data(c: &mut Criterion) {
 	group.finish();
 }
 
-criterion_group!(benches, tlock_single_commitee_dynamic_data);
+criterion_group!(benches, tlock);
 criterion_main!(benches);

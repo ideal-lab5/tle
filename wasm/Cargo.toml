@@ -3,8 +3,8 @@ name = "tle-wasm-wrapper"
 version = "0.0.1-dev"
 edition = "2021"
 license = "GPL-3.0-only"
-description = "An API for calling etf crypto primitives for encryption and proof verification"
-repository = "https://github.com/ideal-lab5/etf"
+description = "Wasm bidings for the timelock encryption crate"
+repository = "https://github.com/ideal-lab5/tle"
 authors = [
     "Tony Riemer <driemworks@idealabs.network>",
     "Coleman Irby <coleman@idealabs.network>"
