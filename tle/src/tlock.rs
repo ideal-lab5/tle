@@ -26,7 +26,7 @@ use ark_std::{
 
 use w3f_bls::EngineBLS;
 
-/// a secret key used for encryption/decryption
+/// A secret key used for encryption/decryption
 pub type OpaqueSecretKey = [u8; 32];
 
 #[derive(CanonicalDeserialize, CanonicalSerialize, Debug)]
